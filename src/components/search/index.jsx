@@ -27,13 +27,12 @@ SearchContainer.propTypes = {
 
 const SearchPagination = ({ arr = [], pageSize = 8 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-
-  const totalPages = Math.ceil(arr.length / pageSize);
-
+  const dataArray = Array.isArray(arr) ? arr : [];
+  const totalPages = Math.ceil(dataArray.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, arr.length);
-  const displayItems = arr.slice(startIndex, endIndex);
-  console.log(displayItems);
+  const displayItems = dataArray.slice(startIndex, endIndex);
+  console.log('여기', displayItems);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -52,7 +51,7 @@ const SearchPagination = ({ arr = [], pageSize = 8 }) => {
         {displayItems.map((item, index) => (
           <HomeCard
             key={index}
-            thumbnail_img_url={item.thumbnail_img_url}
+            thumbnail_img_url={item.thumbNailImgUrl}
             title={item.title}
             nickname={item.nickname}
             postId={item.postId}
@@ -62,7 +61,7 @@ const SearchPagination = ({ arr = [], pageSize = 8 }) => {
       <PaginationContainer>
         <StyledPagination
           current={currentPage}
-          total={arr.length}
+          total={dataArray.length}
           pageSize={pageSize}
           onChange={handlePageChange}
         />

@@ -3,11 +3,12 @@ import ValidateSchema from '../../utils/sign-up/validateSchema';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { TextBox } from '../../stores/atom/text-box';
 import { useCustomNavigate } from '../../hooks';
-import { Button, Input, Layout } from 'antd';
+import { Button, Input, Layout, message } from 'antd';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
+import MemberAPI from '../../api/member-api';
+import { ROUTES } from '../../constants/routes';
 const SignUpContainer = () => {
   const { handleChangeUrl } = useCustomNavigate();
   const [emailDisabled, setEmailDisabled] = useState(false);
@@ -24,6 +25,8 @@ const SignUpContainer = () => {
   const [emailError, setEmailError] = useState(false);
   const [nicknameError, setNicknameError] = useState(false);
 
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isNicknameValid, setIsNicknameValid] = useState(false);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -32,8 +35,30 @@ const SignUpContainer = () => {
       checkPassword: '',
     },
     validationSchema: ValidateSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       // handle form submission
+      try {
+        await MemberAPI.signUpAPI({
+          email: values.email,
+          nickname: values.nickname,
+          password: values.password,
+        });
+        handleChangeUrl(ROUTES.SIGNUP_SUCCESS);
+      } catch (error) {
+        console.error(e);
+        message.error({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              회원 가입 형식을 지켜주세요.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
+      }
     },
   });
 
@@ -68,6 +93,13 @@ const SignUpContainer = () => {
   }, [checkOne, checkTwo, checkThree, checkFour]);
 
   useEffect(() => {
+    setIsEmailValid(!errors.email && values.email.length > 0);
+  }, [errors.email, values.email]);
+
+  useEffect(() => {
+    setIsNicknameValid(!errors.nickname && values.nickname.length > 0);
+  }, [errors.nickname, values.nickname]);
+  useEffect(() => {
     if (values.email.length >= 0) {
       setEmailError(false);
       setCheckOne_2(false);
@@ -82,6 +114,66 @@ const SignUpContainer = () => {
       setCheckTwo_1(false);
     }
   }, [values.nickname]);
+
+  const handleEmailCheck = async () => {
+    if (values.email.length > 0 && (!touched.email || !errors.email)) {
+      try {
+        await MemberAPI.checkDuplicatedEmailAPI({
+          email: formik.values.email,
+        });
+        setEmailDisabled(true);
+        setCheckOne(true);
+        setCheckOne_3(false);
+      } catch (error) {
+        setCheckOne_3(true);
+        console.error(error);
+        message.error({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              중복된 이메일 입니다.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
+      }
+    } else if (values.email.length === 0) {
+      setEmailError(true);
+    }
+  };
+  const handleNicknameCheck = async () => {
+    if (values.nickname.length > 0 && (!touched.nickname || !errors.nickname)) {
+      try {
+        await MemberAPI.checkDuplicatedNicknameAPI({
+          nickname: formik.values.nickname,
+        });
+        setNicknameDisabled(true);
+        setCheckTwo(true);
+
+        setCheckTwo_2(false);
+      } catch (error) {
+        console.error(error);
+        setCheckTwo_2(true);
+        message.error({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              중복된 닉네임 입니다.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
+      }
+    } else if (values.nickname.length === 0) {
+      setNicknameError(true);
+    }
+  };
 
   return (
     <StyledLayout>
@@ -160,34 +252,20 @@ const SignUpContainer = () => {
                     color="error"
                     cursor="default"
                   >
-                    이미 가입된 이메일입니다.
+                    중복된 이메일입니다.
                   </TextBox>
                 )}
               </EmailInput>
               <ButtonInput>
                 <StyledButton
-                  disabled={emailDisabled}
-                  onClick={() => {
-                    if (
-                      values.email.length > 0 &&
-                      (!touched.email || !errors.email)
-                    ) {
-                      // handle email duplication check
-                    } else if (values.email.length === 0) {
-                      setEmailError(true);
-                    }
-                  }}
+                  disabled={emailDisabled || !isEmailValid}
+                  onClick={handleEmailCheck}
                 >
                   <TextBox
                     typography="h5"
                     fontWeight={'500'}
                     textAlign="center"
                     color={emailDisabled ? 'white' : 'black'}
-                    // test
-                    // onClick={() => {
-                    //   setEmailDisabled(true);
-                    //   setCheckOne(true);
-                    // }}
                   >
                     중복확인
                   </TextBox>
@@ -268,34 +346,20 @@ const SignUpContainer = () => {
                     color="error"
                     cursor="default"
                   >
-                    이미 가입된 닉네임입니다.
+                    중복된 닉네임입니다.
                   </TextBox>
                 )}
               </EmailInput>
               <ButtonInput>
                 <StyledButton
-                  disabled={nicknameDisabled}
-                  onClick={() => {
-                    if (
-                      values.nickname.length > 0 &&
-                      (!touched.nickname || !errors.nickname)
-                    ) {
-                      // handle nickname duplication check
-                    } else if (values.nickname.length === 0) {
-                      setNicknameError(true);
-                    }
-                  }}
+                  disabled={nicknameDisabled || !isNicknameValid}
+                  onClick={handleNicknameCheck}
                 >
                   <TextBox
                     typography="h5"
                     fontWeight={'500'}
                     textAlign="center"
-                    color={nicknameDisabled ? 'white' : 'primary'}
-                    // test
-                    // onClick={() => {
-                    //   setNicknameDisabled(true);
-                    //   setCheckTwo(true);
-                    // }}
+                    color={nicknameDisabled ? 'white' : 'black'}
                   >
                     중복확인
                   </TextBox>
@@ -450,9 +514,11 @@ const StyledButton = styled(Button)`
   height: 54px;
   border: 1px solid ${colors.black900};
   &:disabled {
+    color: white;
     background-color: ${colors.black600};
   }
   &:disabled:hover {
+    color: white !important;
     background-color: ${colors.black900} !important;
   }
   &:hover {

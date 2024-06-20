@@ -1,6 +1,6 @@
 import React from 'react';
 import { ROUTES } from './constants/routes';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Home from './pages/home';
 import SignIn from './pages/sign-in';
 import SignUpAgreement from './pages/sign-up-agreement';
@@ -16,16 +16,22 @@ import MyPage from './pages/my-page';
 import Modify from './pages/modify';
 import Edit from './pages/edit';
 import Error404 from './pages/errors/error404';
+import { getCookie } from './utils/cookie';
 function App() {
+  const accessToken = getCookie('accessToken');
   return (
     <BrowserRouter>
       <Routes>
         <Route
-          path={ROUTES.EDIT}
+          path={ROUTES.EDIT.replace(':postId', ':postId')}
           element={
-            <MainLayout>
-              <Edit />
-            </MainLayout>
+            !accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <MainLayout>
+                <Edit />
+              </MainLayout>
+            )
           }
         ></Route>
         <Route
@@ -39,18 +45,26 @@ function App() {
         <Route
           path={ROUTES.POST}
           element={
-            <MainLayout>
-              <Post />
-            </MainLayout>
+            !accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <MainLayout>
+                <Post />
+              </MainLayout>
+            )
           }
         ></Route>
         <Route path={ROUTES.MODIFY} element={<Modify />}></Route>
         <Route
           path={ROUTES.MYPAGE}
           element={
-            <MainLayout>
-              <MyPage />
-            </MainLayout>
+            !accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <MainLayout>
+                <MyPage />
+              </MainLayout>
+            )
           }
         ></Route>
         <Route
@@ -72,33 +86,49 @@ function App() {
         <Route
           path={ROUTES.SIGNIN}
           element={
-            <AuthLayout title="">
-              <SignIn />
-            </AuthLayout>
+            accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <AuthLayout title="">
+                <SignIn />
+              </AuthLayout>
+            )
           }
         />
         <Route
           path={ROUTES.SIGNUP_AGREEMENT}
           element={
-            <AuthLayout title="서비스 이용 동의">
-              <SignUpAgreement />
-            </AuthLayout>
+            accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <AuthLayout title="서비스 이용 동의">
+                <SignUpAgreement />
+              </AuthLayout>
+            )
           }
         />
         <Route
           path={ROUTES.SIGNUP}
           element={
-            <AuthLayout title="회원 정보 입력">
-              <SignUp />
-            </AuthLayout>
+            accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <AuthLayout title="회원 정보 입력">
+                <SignUp />
+              </AuthLayout>
+            )
           }
         />
         <Route
           path={ROUTES.SIGNUP_SUCCESS}
           element={
-            <AuthLayout title="">
-              <SignUpSuccess />
-            </AuthLayout>
+            accessToken ? (
+              <Navigate to="/" />
+            ) : (
+              <AuthLayout title="">
+                <SignUpSuccess />
+              </AuthLayout>
+            )
           }
         />
         <Route

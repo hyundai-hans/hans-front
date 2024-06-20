@@ -10,6 +10,6 @@ export const ROUTES = {
   POST: '/post',
   MYPAGE: '/mypage',
   MODIFY: '/modify',
-  EDIT: '/edit',
+  EDIT: '/edit/:postId',
   ERROR_404: '/*',
 };

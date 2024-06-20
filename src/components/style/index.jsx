@@ -1,11 +1,14 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Radio } from 'antd';
+import { Radio, Spin } from 'antd';
 import PropTypes from 'prop-types';
-
+import { SearchPagination } from '../search';
+import PostAPI from '../../api/post-api';
 const StyleContainer = ({ first, second, third, fourth }) => {
   const [selectedValue, setSelectedValue] = useState('a');
-  const [selectedText, setSelectedText] = useState(first); // Initialize with the default first button text
+  const [selectedText, setSelectedText] = useState(first);
+  const [isLoading, setIsLoading] = useState(true);
+  const [arr, setArr] = useState([]);
 
   const handleChange = (e) => {
     setSelectedValue(e.target.value);
@@ -28,20 +31,44 @@ const StyleContainer = ({ first, second, third, fourth }) => {
   };
 
   useEffect(() => {
-    console.log(selectedText); // Log the selected button's inner text
-  }, [selectedText]); // useEffect depends on selectedText changes
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const res = await PostAPI.viewPostsAPI(selectedText);
+        setArr(res.data.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [selectedText]);
 
   return (
-    <StyledRadioGroup
-      defaultValue={'a'}
-      value={selectedValue}
-      onChange={handleChange}
-    >
-      <Radio.Button value="a">{first}</Radio.Button>
-      <Radio.Button value="b">{second}</Radio.Button>
-      <Radio.Button value="c">{third}</Radio.Button>
-      <Radio.Button value="d">{fourth}</Radio.Button>
-    </StyledRadioGroup>
+    <>
+      {isLoading ? (
+        <LoadingContainer>
+          <BlackSpin size="large" />
+        </LoadingContainer>
+      ) : (
+        <>
+          <StyledRadioGroup
+            defaultValue="a"
+            value={selectedValue}
+            onChange={handleChange}
+          >
+            <Radio.Button value="a">{first}</Radio.Button>
+            <Radio.Button value="b">{second}</Radio.Button>
+            <Radio.Button value="c">{third}</Radio.Button>
+            <Radio.Button value="d">{fourth}</Radio.Button>
+          </StyledRadioGroup>
+          <div style={{ width: '100%', paddingTop: '10vh' }}>
+            <SearchPagination arr={arr} pageSize={8} />
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
@@ -51,11 +78,26 @@ StyleContainer.propTypes = {
   third: PropTypes.string.isRequired,
   fourth: PropTypes.string.isRequired,
 };
+const LoadingContainer = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+`;
 
+const BlackSpin = styled(Spin)`
+  .ant-spin-dot {
+    i {
+      background: black;
+    }
+  }
+`;
 const StyledRadioGroup = styled(Radio.Group)`
   display: flex;
   align-items: center;
-
+  justify-content: center;
   .ant-radio-button-wrapper {
     border: 1px solid black;
     color: black !important;

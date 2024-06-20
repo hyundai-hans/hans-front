@@ -1,14 +1,24 @@
 import { colors } from '../../constants/colors';
 import ValidateSchema from '../../utils/modify/validateSchema';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import {
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { TextBox } from '../../stores/atom/text-box';
 import { useCustomNavigate } from '../../hooks';
-import { Button, Input, Layout } from 'antd';
+import { Button, Input, Layout, message, Upload, Image } from 'antd';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CustomFooter from '../layouts/footer';
+import MemberAPI from '../../api/member-api';
+import { useSetRecoilState } from 'recoil'; // Import useSetRecoilState
+import { memberState } from '../../stores/atom/member-atom'; // Import memberState atom
+import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 const ModifyContainer = () => {
+  const setMemberState = useSetRecoilState(memberState); // Access to setMemberState
   const { handleChangeUrl } = useCustomNavigate();
   const [nicknameDisabled, setNicknameDisabled] = useState(false);
   const [checkOne, setCheckOne] = useState(false);
@@ -19,24 +29,70 @@ const ModifyContainer = () => {
   const [checkFour, setCheckFour] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [nicknameError, setNicknameError] = useState(false);
-  const [uploadedUrl, setUploadedUrl] = useState(''); // State to hold uploaded URL
-  const [thumbnail, setThumbnail] = useState(null);
+  const [isNicknameValid, setIsNicknameValid] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      file: undefined,
+      files: [],
       nickname: '',
       password: '',
       checkPassword: '',
     },
     validationSchema: ValidateSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       // handle form submission
+      console.log(values.files[0].blobUrl);
+      try {
+        await MemberAPI.editMemberInfoAPI({
+          profileImg: values.files[0].blobUrl,
+          nickname: values.nickname,
+          password: values.password,
+        });
+        const updatedMemberData = {
+          nickname: values.nickname,
+          profileImage: values.files[0].blobUrl,
+        };
+        setMemberState(updatedMemberData);
+        message.success({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              성공적으로 수정했습니다.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
+        setIsSubmitted(true);
+      } catch (error) {
+        console.error(error);
+        message.error({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              입력 형식을 확인해주세요.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
+      }
     },
   });
 
   const { values, touched, errors, handleChange, handleBlur, handleSubmit } =
     formik;
-
+  useEffect(() => {
+    if (isSubmitted) {
+      navigate('/mypage');
+    }
+  }, [isSubmitted, navigate]);
   useEffect(() => {
     if (touched.password && errors.password) {
       setCheckThree(false);
@@ -64,7 +120,7 @@ const ModifyContainer = () => {
     //   values.password,
     //   values.nickname,
     // );
-  }, [values.file, values.checkPassword, values.password, values.nickname]);
+  }, [values.files, values.checkPassword, values.password, values.nickname]);
 
   useEffect(() => {
     setIsDisabled(!(checkOne && checkTwo && checkThree && checkFour));
@@ -79,45 +135,152 @@ const ModifyContainer = () => {
   }, [values.nickname]);
 
   useEffect(() => {
-    if (values.file !== undefined && values.file.size > 2 * 1024 * 1024) {
-      setCheckOne(false);
-    } else if (
-      values.file !== undefined &&
-      values.file.size <= 2 * 1024 * 1024
-    ) {
-      setCheckOne(true);
-    } else if (values.file === undefined || values.file === null) {
-      setCheckOne(false);
-    }
-  }, [values.file]);
+    // console.log(formik.values.files.length);
+    if (formik.values.files.length === 1) setCheckOne(true);
+    else setCheckOne(false);
+  }, [formik.values.files]);
+  useEffect(() => {
+    setIsNicknameValid(!errors.nickname && values.nickname.length > 0);
+  }, [errors.nickname, values.nickname]);
 
-  const handleFileChange = (event) => {
-    const file = event.currentTarget.files[0];
-    formik.setFieldValue('file', file);
+  const handleNicknameCheck = async () => {
+    if (values.nickname.length > 0 && (!touched.nickname || !errors.nickname)) {
+      try {
+        await MemberAPI.checkDuplicatedNicknameAPI({
+          nickname: formik.values.nickname,
+        });
+        setNicknameDisabled(true);
+        setCheckTwo(true);
 
-    if (file && !errors.file) {
-      // Check if the file type is supported (JPG, JPEG, GIF, PNG)
-      if (
-        ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'].includes(
-          file.type,
-        )
-      ) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const url = URL.createObjectURL(file);
-          console.log(url); // Log the URL when thumbnail is about to be displayed
-          setThumbnail(reader.result); // Set thumbnail image to state
-          setUploadedUrl(url); // Optionally store the URL in state
-        };
-        reader.readAsDataURL(file);
-      } else {
-        console.log(
-          '지원하지 않는 파일 형식입니다. JPG, JPEG, GIF, PNG 파일을 업로드하세요.',
-        ); // Log error message for unsupported file types
-        // Optionally, provide user feedback or handle unsupported file types
+        setCheckTwo_2(false);
+      } catch (error) {
+        console.error(error);
+        setCheckTwo_2(true);
+        message.error({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              중복된 닉네임 입니다.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
       }
+    } else if (values.nickname.length === 0) {
+      setNicknameError(true);
     }
   };
+
+  // useEffect(() => {
+  //   if (values.file !== undefined && values.file.size > 2 * 1024 * 1024) {
+  //     setCheckOne(false);
+  //   } else if (
+  //     values.file !== undefined &&
+  //     values.file.size <= 2 * 1024 * 1024
+  //   ) {
+  //     setCheckOne(true);
+  //   } else if (values.file === undefined || values.file === null) {
+  //     setCheckOne(false);
+  //   }
+  // }, [values.file]);
+
+  // const handleFileChange = (event) => {
+  //   const file = event.currentTarget.files[0];
+  //   formik.setFieldValue('file', file);
+
+  //   if (file && !errors.file) {
+  //     // Check if the file type is supported (JPG, JPEG, GIF, PNG)
+  //     if (
+  //       ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'].includes(
+  //         file.type,
+  //       )
+  //     ) {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => {
+  //         const url = URL.createObjectURL(file);
+  //         console.log(url); // Log the URL when thumbnail is about to be displayed
+  //         setThumbnail(reader.result); // Set thumbnail image to state
+  //         setUploadedUrl(url); // Optionally store the URL in state
+  //       };
+  //       reader.readAsDataURL(file);
+  //     } else {
+  //       console.log(
+  //         '지원하지 않는 파일 형식입니다. JPG, JPEG, GIF, PNG 파일을 업로드하세요.',
+  //       ); // Log error message for unsupported file types
+  //       // Optionally, provide user feedback or handle unsupported file types
+  //     }
+  //   }
+  // };
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+
+  const handleChangeFile = ({ fileList }) => {
+    const validFiles = [];
+    const filePromises = fileList.map((file) =>
+      yup
+        .object()
+        .shape({
+          originFileObj: yup
+            .mixed()
+            .required('이미지를 업로드해주세요.')
+            .test(
+              'fileType',
+              '지원하는 파일 형식은 JPG, JPEG, GIF, PNG 입니다.',
+              (value) => {
+                if (!value) return false; // Handle empty values
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                return (
+                  validTypes.includes(value.type) ||
+                  value.name.match(/\.(jpg|jpeg|png|gif)$/i)
+                );
+              },
+            ),
+        })
+        .validate({ originFileObj: file.originFileObj }, { abortEarly: false })
+        .then(async () => {
+          const blobUrl = await getBase64(file.originFileObj);
+          validFiles.push({
+            ...file,
+            originFileObj: file.originFileObj,
+            blobUrl,
+          });
+        })
+        .catch((error) => {
+          message.error(error.message);
+        }),
+    );
+
+    Promise.all(filePromises).then(() => {
+      formik.setFieldValue('files', validFiles);
+    });
+  };
+  const handleRemove = (file) => {
+    const updatedFiles = formik.values.files.filter((f) => f.uid !== file.uid);
+    formik.setFieldValue('files', updatedFiles);
+  };
+
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
+
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
   return (
     <>
@@ -138,30 +301,38 @@ const ModifyContainer = () => {
               프로필 사진
             </TextBox>
 
-            <input
-              type="file"
-              id="file"
-              name="file"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
-            <label htmlFor="file" style={{ cursor: 'pointer' }}>
-              {values.file === undefined ? (
-                <TextBox typography="body4" fontWeight={'400'}>
-                  파일을 업로드 하세요.
-                </TextBox>
-              ) : !errors.file && thumbnail ? (
-                <img
-                  src={thumbnail}
-                  alt="Thumbnail"
-                  style={{ width: '100px', height: '100px', objectFit: 'fill' }}
-                />
-              ) : (
-                <TextBox typography="body4" fontWeight={'400'}>
-                  {errors.file}
-                </TextBox>
-              )}
-            </label>
+            <div>
+              <div style={{ width: '50vw' }}>
+                <Upload
+                  name="files"
+                  listType="picture-card"
+                  fileList={formik.values.files}
+                  onPreview={handlePreview}
+                  onChange={handleChangeFile}
+                  onBlur={formik.handleBlur}
+                  onRemove={handleRemove}
+                  beforeUpload={() => false}
+                  style={{
+                    margin: '0 auto',
+                    display: 'flex',
+                    flexWrap: 'wrap !important',
+                  }}
+                >
+                  {formik.values.files.length > 0 ? null : uploadButton}
+                </Upload>
+                {previewImage && (
+                  <Image
+                    wrapperStyle={{ display: 'none' }}
+                    preview={{
+                      visible: previewOpen,
+                      onVisibleChange: (visible) => setPreviewOpen(visible),
+                      afterClose: () => setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                  />
+                )}
+              </div>
+            </div>
 
             {/* Nickname */}
             <TextBox typography="body2" fontWeight={'400'} cursor="default">
@@ -238,7 +409,7 @@ const ModifyContainer = () => {
                     color="error"
                     cursor="default"
                   >
-                    이미 가입된 닉네임입니다.
+                    중복된 닉네임입니다.
                   </TextBox>
                 )}
               </EmailInput>
@@ -246,27 +417,13 @@ const ModifyContainer = () => {
               <ButtonInput>
                 <StyledButton
                   disabled={nicknameDisabled}
-                  onClick={() => {
-                    if (
-                      values.nickname.length > 0 &&
-                      (!touched.nickname || !errors.nickname)
-                    ) {
-                      // handle nickname duplication check
-                    } else if (values.nickname.length === 0) {
-                      setNicknameError(true);
-                    }
-                  }}
+                  onClick={handleNicknameCheck}
                 >
                   <TextBox
                     typography="h5"
                     fontWeight={'500'}
                     textAlign="center"
                     color={nicknameDisabled ? 'white' : 'primary'}
-                    //test
-                    // onClick={() => {
-                    //   setNicknameDisabled(true);
-                    //   setCheckTwo(true);
-                    // }}
                   >
                     중복확인
                   </TextBox>

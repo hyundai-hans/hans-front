@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Card, Carousel } from 'antd';
 import { motion } from 'framer-motion';
 import { useCustomNavigate } from '../../hooks';
-
+import { useRecoilValue } from 'recoil';
+import { memberState } from '../../stores/atom/member-atom';
 import image1 from '../../assets/image/carousel0.jpg';
 import image3 from '../../assets/image/carousel2.jpg';
 import image4 from '../../assets/image/carousel3.jpg';
@@ -12,6 +13,7 @@ import image5 from '../../assets/image/carousel4.jpg';
 import image6 from '../../assets/image/carousel6.jpg';
 import image7 from '../../assets/image/carousel7.jpg';
 import image8 from '../../assets/image/carousel8.jpg';
+import PostAPI from '../../api/post-api';
 const { Meta } = Card;
 
 const HomeCarousel = () => {
@@ -19,6 +21,8 @@ const HomeCarousel = () => {
   const handleBeforeChange = () => {
     setAnimate(false);
   };
+  const memberData = useRecoilValue(memberState);
+  console.log(memberData.nickname);
 
   const handleAfterChange = () => {
     setAnimate(true);
@@ -181,20 +185,40 @@ const StyledTextOverlay = styled(motion.div)`
   line-height: ${(props) => props.lineHeight};
   opacity: 1;
   color: white;
+
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
 const HomeCard = ({ thumbnail_img_url, title, nickname, postId }) => {
   const { handleChangeUrl } = useCustomNavigate();
+  const [blobUrl, setBlobUrl] = useState('');
 
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const response = await fetch(thumbnail_img_url, { mode: 'cors' });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setBlobUrl(url);
+      } catch (error) {
+        console.error('Fetch image failed:', error);
+      }
+    };
+
+    fetchImage();
+  }, [thumbnail_img_url]);
   return (
     <CardContainer>
       <StyledCard
         hoverable
         style={{ width: 240 }}
-        cover={<StyledCardCover alt="example" src={thumbnail_img_url} />}
-        onClick={() => handleChangeUrl(postId)}
+        cover={<StyledCardCover alt="example" src={blobUrl} />}
+        onClick={() => handleChangeUrl(`/detail/${postId}`)}
       >
-        <Meta title={title} description={nickname} />
+        <StyledMeta title={title} description={nickname} />
       </StyledCard>
     </CardContainer>
   );
@@ -215,11 +239,25 @@ const CardContainer = styled.div`
 
 const StyledCard = styled(Card)`
   width: 240px;
+  border: 1px solid gray;
 `;
 
 const StyledCardCover = styled.img`
   height: 300px;
   object-fit: fill;
+  border: 1px solid gray;
+`;
+
+const StyledMeta = styled(Meta)`
+  .ant-card-meta-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .ant-card-meta-description {
+    font-size: 15px;
+    color: gray;
+  }
 `;
 
 export { HomeCarousel, HomeCard };

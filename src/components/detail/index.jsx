@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Card, Carousel } from 'antd';
@@ -6,26 +6,46 @@ import { Card, Carousel } from 'antd';
 const { Meta } = Card;
 
 const DetailCarousel = ({ images }) => {
-  const [animate, setAnimate] = useState(true);
+  const [imageBlobs, setImageBlobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchAndStoreBlobs = async () => {
+      try {
+        const fetchedBlobs = await Promise.all(
+          images.map(async (element) => {
+            const response = await fetch(element.imgUrl, { mode: 'cors' });
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const blob = await response.blob();
+            return blob;
+          }),
+        );
 
-  const handleBeforeChange = () => {
-    setAnimate(false);
-  };
+        const blobUrls = fetchedBlobs.map((blob) => URL.createObjectURL(blob));
+        setImageBlobs(blobUrls);
+        console.log('여기', blobUrls);
+      } catch (error) {
+        console.error('Error fetching or storing blobs:', error);
+      }
+    };
 
-  const handleAfterChange = () => {
-    setAnimate(true);
-  };
+    fetchAndStoreBlobs();
+
+    return () => {
+      // Clean up blob URLs when component unmounts
+      imageBlobs.forEach((blobUrl) => URL.revokeObjectURL(blobUrl));
+    };
+  }, [images]);
+
+  // if (imageBlobs.length === 0) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
-    <StyledCarousel
-      arrows
-      infinite
-      autoplay
-      beforeChange={handleBeforeChange}
-      afterChange={handleAfterChange}
-    >
-      {images.map((element, index) => (
-        <CarouselItem key={index} imgUrl={element.imgUrl} />
+    <StyledCarousel arrows infinite autoplay>
+      {imageBlobs.map((blobUrl, index) => (
+        <CarouselItem key={index} imgUrl={blobUrl} />
       ))}
     </StyledCarousel>
   );
@@ -57,10 +77,11 @@ const StyledCarousel = styled(Carousel)`
   overflow: hidden;
   height: 100%;
 `;
+
 const StyledImage = styled.img`
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 100vh;
+  object-fit: fill;
 `;
 
 const ItemContainer = styled.div`
@@ -72,16 +93,21 @@ const ItemContainer = styled.div`
 
 const DetailCard = ({ productPrice, productImg, productUrl, productName }) => {
   const formattedPrice = `${new Intl.NumberFormat().format(productPrice)} 원`;
+
+  const absoluteProductUrl = /^https?:\/\//i.test(productUrl)
+    ? productUrl
+    : `http://localhost:3000/${productUrl}`;
   return (
     <CardContainer>
-      <StyledCard
-        hoverable
-        style={{ width: 240 }}
-        cover={<StyledCardCover alt="example" src={productImg} />}
-        onClick={() => (window.location.href = productUrl)}
-      >
-        <Meta title={productName} description={formattedPrice} />
-      </StyledCard>
+      <a href={absoluteProductUrl} target="_blank" rel="noopener noreferrer">
+        <StyledCard
+          hoverable
+          style={{ width: 240 }}
+          cover={<StyledCardCover alt="example" src={productImg} />}
+        >
+          <StyledMeta title={productName} description={formattedPrice} />
+        </StyledCard>
+      </a>
     </CardContainer>
   );
 };
@@ -101,11 +127,25 @@ const CardContainer = styled.div`
 
 const StyledCard = styled(Card)`
   width: 240px;
+  border: 1px solid black;
 `;
 
 const StyledCardCover = styled.img`
   height: 300px;
   object-fit: fill;
+  border: 1px solid black;
+`;
+
+const StyledMeta = styled(Meta)`
+  .ant-card-meta-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .ant-card-meta-description {
+    font-size: 15px;
+    color: gray;
+  }
 `;
 
 export { DetailCarousel, DetailCard };

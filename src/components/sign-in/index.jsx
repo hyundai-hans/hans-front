@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
 import ValidateSchema from '../../utils/sign-in/validateSchema';
@@ -7,9 +7,16 @@ import { TextBox } from '../../stores/atom/text-box';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { colors } from '../../constants/colors';
 import { useCustomNavigate } from '../../hooks';
-
+import MemberAPI from '../../api/member-api';
+import { setCookie } from '../../utils/cookie';
+import { ROUTES } from '../../constants/routes';
+import { useRecoilValue, useSetRecoilState } from 'recoil'; // Import useSetRecoilState
+import { memberState } from '../../stores/atom/member-atom';
 const SignInContainer = () => {
   const { handleChangeUrl } = useCustomNavigate();
+  const setMemberState = useSetRecoilState(memberState);
+  const memberData = useRecoilValue(memberState);
+  const [isDisabled, setIsDisabled] = useState(false);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -17,7 +24,50 @@ const SignInContainer = () => {
     },
     validationSchema: ValidateSchema,
     onSubmit: async (values) => {
-      console.log('Form submitted:', values);
+      try {
+        setIsDisabled(true);
+        const response = await MemberAPI.signInAPI({
+          email: values.email,
+          password: values.password,
+        });
+        const accessToken = response.headers.get('Authorization');
+        console.log(accessToken);
+        if (accessToken) {
+          setCookie(accessToken);
+        } else {
+          console.error('No accessToken in response');
+          return;
+        }
+
+        try {
+          const profileResponse = await MemberAPI.memberProfileAPI();
+          const memberResponse = profileResponse.data.data;
+          const updatedMemberData = {
+            nickname: memberResponse.nickname,
+            profileImage: memberResponse.profileImg,
+          };
+          setMemberState(updatedMemberData);
+          handleChangeUrl(ROUTES.HOME);
+        } catch (profileError) {
+          console.error('Error fetching profile:', profileError);
+        }
+      } catch (signInError) {
+        setIsDisabled(false);
+
+        console.error('Error signing in:', signInError);
+        message.error({
+          content: (
+            <TextBox typography="body3" fontWeight={'400'}>
+              아이디와 비밀번호를 확인해주세요.
+            </TextBox>
+          ),
+          duration: 2,
+          style: {
+            width: '346px',
+            height: '41px',
+          },
+        });
+      }
     },
   });
 
@@ -88,6 +138,7 @@ const SignInContainer = () => {
                   htmlType="submit"
                   type="primary"
                   onClick={handleOnclick}
+                  disabled={isDisabled}
                 >
                   <TextBox
                     typography="h5"

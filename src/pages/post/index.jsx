@@ -18,10 +18,10 @@ import styled from 'styled-components';
 import { colors } from '../../constants/colors';
 import ValidateSchema from '../../utils/post/validateSchema';
 import { TextBox } from '../../stores/atom/text-box';
-import { useCustomNavigate } from '../../hooks';
 import * as yup from 'yup';
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
+import PostAPI from '../../api/post-api';
 
 const { TextArea } = Input;
 const { Dragger } = Upload;
@@ -69,7 +69,6 @@ DebounceSelect.propTypes = {
 };
 
 const Post = () => {
-  const { handleChangeUrl } = useCustomNavigate();
   const { token } = theme.useToken();
 
   const [inputVisible, setInputVisible] = useState(false);
@@ -96,8 +95,23 @@ const Post = () => {
       products: '',
     },
     validationSchema: ValidateSchema,
-    onSubmit: (values) => {
-      const blobUrls = values.files.map((file) => file.blobUrl);
+    onSubmit: async (values) => {
+      try {
+        const blobUrls = values.files.map((file) => file.blobUrl);
+        console.log(blobUrls);
+        setIsDisabled(true);
+        await PostAPI.writePostAPI({
+          title: values.title,
+          body: values.detail,
+          tagList: values.hashtags,
+          productName: values.products[0],
+          imgUrl: blobUrls,
+        });
+        window.location.href = 'http://localhost:3000/style';
+      } catch (error) {
+        setIsDisabled(false);
+        console.error(error);
+      }
     },
   });
 
@@ -164,12 +178,12 @@ const Post = () => {
             ),
         })
         .validate({ originFileObj: file.originFileObj }, { abortEarly: false })
-        .then(() => {
-          const blobUrl = URL.createObjectURL(file.originFileObj);
+        .then(async () => {
+          const url = await getBase64(file.originFileObj);
           validFiles.push({
             ...file,
             originFileObj: file.originFileObj,
-            blobUrl,
+            blobUrl: url,
           });
         })
         .catch((error) => {
@@ -198,7 +212,6 @@ const Post = () => {
     });
 
   useEffect(() => {
-    console.log(formik.values.products + ' ' + formik.values.title);
     if (
       formik.values.title.length > 0 &&
       formik.values.detail.length > 0 &&
@@ -216,23 +229,32 @@ const Post = () => {
     formik.values.products,
   ]);
 
-  // Function to fetch products (similar to fetchUserList)
   const fetchProducts = async (productName) => {
-    console.log('fetching products', productName);
-
-    return fetch('https://randomuser.me/api/?results=5')
-      .then((response) => response.json())
-      .then((data) =>
-        data.results.map((product) => ({
-          label: `${product.name.first} ${product.name.last}`, // Make sure label is a string
-          value: product.login.username,
-        })),
-      );
+    try {
+      const response = await PostAPI.viewClothesAPI(productName);
+      const data = response.data.data;
+      if (data && Array.isArray(data)) {
+        return data.map((product) => ({
+          label: product.productName,
+          value: product.productId,
+        }));
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
   };
 
   return (
     <StyledLayout>
       <StyledContent>
+        <TextContainer style={{ cursor: 'default' }}>
+          <TextBox typography="h1" fontWeight="700">
+            Post
+          </TextBox>
+        </TextContainer>
         <FormContainer onSubmit={formik.handleSubmit}>
           <TextBox variant="body2" fontWeight={'400'} cursor="default">
             Title
@@ -441,6 +463,13 @@ const Post = () => {
 const StyledLayout = styled(Layout)`
   max-width: 100vw;
   background-color: white;
+`;
+
+const TextContainer = styled.div`
+  color: black;
+  font-weight: ${(props) => props.fontWeight};
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 `;
 
 const StyledContent = styled(Layout.Content)`
