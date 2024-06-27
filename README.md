@@ -59,7 +59,6 @@ HANS의 한섬 상품 구매 유도 SNS 프로젝트 :computer: 웹 페이지 �
 ## ✏️ Component Diagram
 <div align="center">
     <img src="https://github.com/yangjaehyuk/hans-front/assets/37584686/dfed8f27-6e2c-409c-aed6-ae5966022cf5" alt="컴포넌트다이어그램"/>
-    
 </div>
 
 <br/>
