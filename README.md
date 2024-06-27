@@ -87,7 +87,7 @@ Otherwise anyone can see the posts above all There are the banner posts which us
       <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/10a4c6b9-ce35-470b-b31a-8326e9c10681" alt="결제페이지 필수 동의 여부"></td>
     </tr>
     <tr align="center">
-      <th>Inducing purchases handsome-shopping-mall products</th>
+      <th>Promotes the sales of hansome-shopping-mall</th>
       <th>Edit posts</th>
     </tr>
     <tr>
