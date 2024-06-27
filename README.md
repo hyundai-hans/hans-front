@@ -84,7 +84,7 @@ HANS의 한섬 상품 구매 유도 SNS 프로젝트 :computer: 웹 페이지 �
       <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/afbf78ca-b7f0-443c-90b7-a1afd798233a" alt="결제페이지 필수 동의 여부"></td>
     </tr>
     <tr align="center">
-      <th>태그 별 검색th>
+      <th>태그 별 검색</th>
       <th>옷 자랑 글 등록</th>
     </tr>
     <tr>
