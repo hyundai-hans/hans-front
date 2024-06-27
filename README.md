@@ -18,17 +18,13 @@ HANS의 한섬 상품 구매 유도 SNS 프로젝트 :computer: 웹 페이지 �
 
 ---
 
-## 🎯 Team
-<table align="center">
-    <tr>
-        <td align="center"><img alt="avatar" src="https://avatars.githubusercontent.com/u/60885635?v=4" width="100"></td>
-        <td align="center"><img alt="avatar" src="https://github.com/yangjaehyuk.png" width="100"></td>
-    </tr>
-    <tr>
-        <td align="center"><a href="https://github.com/JIUNG GU">구지웅</a></td>
-        <td align="center"><a href="https://github.com/yangjaehyuk">양재혁</a></td>
-    </tr>
- </table>
+## 📓 Description
+
+This project promotes the sales of hansome-shopping-mall(https://www.thehandsome.com).  
+<br/>
+There are the posts whose buy the clothes from the handsome-shopping-mall can post the their clothes which is from the handsome-shopping-mall only authenticated user can post the posts.  
+<br/>
+Otherwise anyone can see the posts above all There are the banner posts which user see recently, for non-member would see banner posts which is the most liked post at banner.
 
 <br/>
 
@@ -63,7 +59,7 @@ HANS의 한섬 상품 구매 유도 SNS 프로젝트 :computer: 웹 페이지 �
 
 <br/>
 
-## 📚 Main Function
+## 🖌️ Main Function
 <div align="center">
 <table>
     <tr align="center">
@@ -143,6 +139,22 @@ HANS의 한섬 상품 구매 유도 SNS 프로젝트 :computer: 웹 페이지 �
 ```
 
 <br>
+
+
+## 🎯 Team
+<table align="center">
+    <tr>
+        <td align="center"><img alt="avatar" src="https://avatars.githubusercontent.com/u/60885635?v=4" width="100"></td>
+        <td align="center"><img alt="avatar" src="https://github.com/yangjaehyuk.png" width="100"></td>
+    </tr>
+    <tr>
+        <td align="center"><a href="https://github.com/JIUNG GU">구지웅</a></td>
+        <td align="center"><a href="https://github.com/yangjaehyuk">양재혁</a></td>
+    </tr>
+ </table>
+
+<br/>
+
 
 ## 📆 Schedule
 ```2024.06.14 ~ 2024.06.21```
