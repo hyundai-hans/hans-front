@@ -10,11 +10,11 @@
 <br/>
 
 
-안녕하세요😃 
+Hello😃 
 
-HANS의 한섬 상품 구매 유도 SNS 프로젝트 :computer: 웹 페이지 입니다 
+This is the promotes the sales of hansome-shopping-mall SNS project :computer: Web page.
 
-백엔드는 [이곳](https://github.com/hyundai-hans/hans-back)을 클릭해 주세요  
+For more detail of Back-end, visit [hans-back](https://github.com/hyundai-hans/hans-back).
 
 ---
 
