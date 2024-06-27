@@ -28,7 +28,7 @@ Otherwise anyone can see the posts above all There are the banner posts which us
 
 <br/>
 
-## 🔨 Stack
+## 🔨 Tech
 
 ### Language
 
