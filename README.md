@@ -14,7 +14,7 @@ Hello😃
 
 This is the promotes the sales of hansome-shopping-mall SNS project :computer: Web page.
 
-For more detail of Back-end, visit [hans-back](https://github.com/hyundai-hans/hans-back).
+For more details of Back-end, visit [hans-back](https://github.com/hyundai-hans/hans-back).
 
 ---
 
