@@ -1,70 +1,163 @@
-# Getting Started with Create React App
+<div align="center">
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<img src="https://github.com/yangjaehyuk/Algorithm/assets/37584686/c9307797-0e4c-48c1-92fc-e6dd0fa79cc9" alt="HANS"/>
 
-## Available Scripts
 
-In the project directory, you can run:
+### 한섬 상품 구매 유도 SNS, HANS
 
-### `npm start`
+</div>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<br/>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+Hello😃 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This is the promotes the sales of hansome-shopping-mall SNS project :computer: Web page.
 
-### `npm run build`
+For more details of Back-end, visit [hans-back](https://github.com/hyundai-hans/hans-back).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📓 Description
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This project promotes the sales of hansome-shopping-mall(https://www.thehandsome.com).  
+<br/>
+There are the posts whose buy the clothes from the handsome-shopping-mall can post the their clothes which is from the handsome-shopping-mall only authenticated user can post the posts.  
+<br/>
+Otherwise anyone can see the posts above all There are the banner posts which user see recently, for non-member would see banner posts which is the most liked post at banner.
 
-### `npm run eject`
+<br/>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🔨 Tech
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Language
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<p align="left">
+ <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E">
+  
+</p>
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Development
 
-## Learn More
+<p align="left">
+  <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black">
+  <img src="https://img.shields.io/badge/recoil-007AF4?style=for-the-badge&logo=recoil&logoColor=black"/>
+  <img src="https://img.shields.io/badge/Ant%20Design-0170fe?style=for-the-badge&logo=Ant%20Design&logoColor=white">
+  <img src="https://img.shields.io/badge/styled%20components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white">
+  
+  
+</p>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+<br/>
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## ✏️ Component Diagram
+<div align="center">
+    <img src="https://github.com/yangjaehyuk/hans-front/assets/37584686/dfed8f27-6e2c-409c-aed6-ae5966022cf5" alt="컴포넌트다이어그램"/>
+</div>
 
-### Analyzing the Bundle Size
+<br/>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🖌️ Main Function
+<div align="center">
+<table>
+    <tr align="center">
+      <th>Sign up</th>
+      <th>My page</th>
+    </tr>
+    <tr>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/413bb2ad-a17f-47be-be15-2a6808982cc6" alt="회원가입 유효성 검사"></td>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/3e4ec387-8442-4fa9-89c0-8ba2f31df4f6"alt="무한스크롤 시연"></td>
+    </tr>
+    <tr align="center">
+      <th>Edit profile</th>
+      <th>Banner</th>
+    </tr>
+    <tr>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/4d4c8ff7-cb39-42a9-bb50-d75a879ca614" alt="날짜에 따라 가격 및 품절 변경"></td>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/afbf78ca-b7f0-443c-90b7-a1afd798233a" alt="결제페이지 필수 동의 여부"></td>
+    </tr>
+    <tr align="center">
+      <th>Search by tags</th>
+      <th>Add posts</th>
+    </tr>
+    <tr>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/d6a96c37-dde4-425e-9e1e-23f0f1c1c3dc" alt="날짜에 따라 가격 및 품절 변경"></td>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/10a4c6b9-ce35-470b-b31a-8326e9c10681" alt="결제페이지 필수 동의 여부"></td>
+    </tr>
+    <tr align="center">
+      <th>Promotes the sales of hansome-shopping-mall</th>
+      <th>Edit posts</th>
+    </tr>
+    <tr>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/4e9624a4-415f-412e-9e3f-cfce5aa8f38c" alt="날짜에 따라 가격 및 품절 변경"></td>
+      <td><img src="https://github.com/yangjaehyuk/LeetCode/assets/37584686/3943e088-bfd4-48a9-b26b-7dd525e6eebf" alt="결제페이지 필수 동의 여부"></td>
+    </tr>
+</table>
 
-### Making a Progressive Web App
+</div>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+<br/>
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📂 Folder Structure
 
-### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+📂 src
+┣ 📂 api
+┣ 📂 assets                   
+┣ 📂 components
+┃  ┣ 📂 layouts
+┃  ┃  ┣ 📂 footer
+┃  ┃  ┣ 📂 main-header
+┃  ┃  ┣ ...
+┃  ┣ 📂 search
+┃  ┣ 📂 home
+┃  ┣ ...           
+┣ 📂 constants
+┃  ┣ 📂 routes
+┃  ┣ 📂 colors
+┃  ┣ ...
+┣ 📂 hooks                    
+┣ 📂 pages
+┃  ┣ 📂 detail
+┃  ┣ 📂 style
+┃  ┣ 📂 edit
+┃  ┣ 📂 my-page
+┃  ┣ ...                  
+┣ 📂 stores               
+┃  ┣ ...                   
+┣ 📂 utils
+┃  ┣ 📂 sign-in
+┃  ┣ 📂 sign-up
+┃  ┣ ...
+┣ App.js
+```
+
+<br>
+
+
+## 🎯 Team
+<table align="center">
+    <tr>
+        <td align="center"><img alt="avatar" src="https://avatars.githubusercontent.com/u/60885635?v=4" width="100"></td>
+        <td align="center"><img alt="avatar" src="https://github.com/yangjaehyuk.png" width="100"></td>
+    </tr>
+    <tr>
+        <td align="center"><a href="https://github.com/JIUNG GU">구지웅</a></td>
+        <td align="center"><a href="https://github.com/yangjaehyuk">양재혁</a></td>
+    </tr>
+ </table>
+
+<br/>
+
+
+## 📆 Schedule
+```2024.06.14 ~ 2024.06.21```
+<br>
+
+
