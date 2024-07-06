@@ -148,7 +148,7 @@ Otherwise anyone can see the posts above all There are the banner posts which us
         <td align="center"><img alt="avatar" src="https://github.com/yangjaehyuk.png" width="100"></td>
     </tr>
     <tr>
-        <td align="center"><a href="https://github.com/JIUNG GU">구지웅</a></td>
+        <td align="center"><a href="https://github.com/JIUNG9">구지웅</a></td>
         <td align="center"><a href="https://github.com/yangjaehyuk">양재혁</a></td>
     </tr>
  </table>
